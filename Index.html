@@ -1,185 +1,196 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.0.2/dist/sweetalert2.min.css">  
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-  <style>
-  #app{
-      background-color:#CFD8DC;      
-  }
-  </style>
+    <link rel="shortcut icon" href="#">
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+  <title>DataTables estilo Bootstrap 5 - NodeJS y Express</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/css/bootstrap.min.css" integrity="sha384-DhY6onE6f3zzKbjUPRc2hOzGAdEf4/Dz+WJwBvEYL/lkkIsI3ihufq9hk9K4lVoK" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/js/bootstrap.bundle.min.js" integrity="sha384-BOsAfwzjNJHrJ8cZidOg56tcQWfp6y72vEJ8xQ9w6Quywb24iOsW913URv1IS4GD" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.0.2/dist/sweetalert2.min.css"> 
+  <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap5.min.css">
+    <style>
+     table.dataTable thead {
+           background-color:#d60a44;
+           color:aliceblue;
+       }        
+    </style>
 </head>
-<body>
-  <div id="app">
-    <v-app>
-      <v-main>   
-       <!--<h2 class="text-center">CRUD usando APIREST con Node JS</h2>-->
-       <!-- Botón CREAR -->                
-        <v-card class="mx-auto mt-5" color="transparent" max-width="1280" elevation="0">            
-        <v-btn class="mx-2" fab dark color="#E040FB" @click="formNuevo()"><v-icon dark>mdi-plus</v-icon></v-btn>           
-        <!-- Tabla y formulario -->
-        <v-simple-table class="mt-5">
-            <template v-slot:default>
+<body style="background-color:#eceff1;">
+    <!-- Image and text --><nav class="navbar navbar-light bg-light"><a class="navbar-brand" href="#">
+        <img src="./Kellogg_logo.svg" width="120" height="40" class="d-inline-block align-top" alt="" style="
+    padding-left: 10px;
+">
+    Bienvenido
+    </a></nav>
+    
+    <div class="container-fluid">
+        <button id="btnCrear" class="btn btn-success mt-2">Crear</button>
+        <div class="row shadow-lg p-3 mb-5">
+            <div class="col">
+                <table id="tablaArticulos" class="table table-striped table-bordered" style="width:100%">
                 <thead>
-                    <tr class="purple darken-2">
-                        <th class="white--text">ID</th>
-                        <th class="white--text">DESCRIPCIÓN</th>
-                        <th class="white--text">PRECIO</th>
-                        <th class="white--text">STOCK</th>
-                        <th class="white--text text-center">ACCIONES</th>
+                    <tr>
+                        <th>ID</th>
+                        <th>DESCRIPCION</th>
+                        <th>PRECIO</th>                                
+                        <th>STOCK</th>                      
+                        <th class="text-center">ACCIONES</th>                      
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="articulo in articulos" :key="articulo.id">
-                    <td>{{ articulo.id }}</td>
-                    <td>{{ articulo.descripcion }}</td>
-                    <td>{{ articulo.precio }}</td>
-                    <td>{{ articulo.stock }}</td>
-                    <td>
-                        <v-btn class="pink" dark small fab  @click="formEditar(articulo.id, articulo.descripcion, articulo.precio, articulo.stock)"><v-icon>mdi-pencil</v-icon></v-btn>
-                        <v-btn class="error" fab dark small @click="borrar(articulo.id)"><v-icon>mdi-delete</v-icon></v-btn>
-                    </td>
-                    </tr>
                 </tbody>
-            </template>
-        </v-simple-table>
-        </v-card>        
-      <!-- Componente de Diálogo para CREAR y EDITAR -->
-      <v-dialog v-model="dialog" max-width="500">        
-        <v-card>
-          <v-card-title class="purple darken-4 white--text">Artículo</v-card-title>    
-          <v-card-text>            
-            <v-form>             
-              <v-container>
-                <v-row>
-                  <input v-model="articulo.id" hidden></input>
-                  <v-col cols="12" md="4">
-                    <v-text-field v-model="articulo.descripcion" label="Descripción" solo required>{{articulo.descripcion}}</v-text-field>
-                  </v-col>
-                  <v-col cols="12" md="4">
-                    <v-text-field v-model="articulo.precio" label="Precio" type="number" prefix="$" solo required></v-text-field>
-                  </v-col>
-                  <v-col cols="12" md="4">
-                    <v-text-field v-model="articulo.stock" label="Stock" type="number" solo required></v-text-field>
-                  </v-col>
-                </v-row>
-              </v-container>            
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn @click="dialog=false" color="blue-grey" dark>Cancelar</v-btn>
-            <v-btn @click="guardar()" type="submit" color="purple accent-3" dark>Guardar</v-btn>
-          </v-card-actions>
-          </v-form>
-        </v-card>
-      </v-dialog>
-      </v-main>
-    </v-app>
-  </div>
+                </table> 
+            </div>
+        </div>
+    </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.js" integrity="sha512-nqIFZC8560+CqHgXKez61MI0f9XSTKLkm0zFVm/99Wt0jSTZ7yeeYwbzyl0SGn/s8Mulbdw+ScCG41hmO2+FKw==" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.0.2/dist/sweetalert2.all.min.js"></script>
+    <script type='text/javascript' src='https://prod-useast-b.online.tableau.com/javascripts/api/viz_v1.js'></script><div class='tableauPlaceholder' style='width: 1920px; height: 915px;'><object class='tableauViz' width='1920' height='915' style='display:none;'><param name='host_url' value='https%3A%2F%2Fprod-useast-b.online.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='&#47;t&#47;kelloggdemo' /><param name='name' value='KelloggDemo&#47;Sheet1' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='showAppBanner' value='false' /></object></div>
 
-  <script>
+    <!--Modal para CRUD-->
+    <div id="modalCRUD" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"></h5>                
+                </div>
+                <form id="formArticulos">    
+                    <div class="modal-body">                
+                            <input id="id" hidden>
+
+                            <label for="" class="col-form-label">Descripción:</label>
+                            <input type="text" class="form-control" id="descripcion">
+                        
+                            <label for="" class="col-form-label">Precio</label>
+                            <input id="precio" type="number" step="0.01" class="form-control">
+                        
+                            <label for="" class="col-form-label">Stock</label>
+                            <input id="stock" type="number" class="form-control">                                
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" id="btnGuardar" class="btn btn-success">Guardar</button>
+                    </div>
+                </form>    
+            </div>
+        </div>
+    </div>  
+
+<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/js/bootstrap.min.js" integrity="sha384-5h4UG+6GOuV9qXh6HqOLwZMY4mnLPraeTrjT5v07o347pj6IkfuoASuGBhfDsp3d" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.0.2/dist/sweetalert2.all.min.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap5.min.js"></script>        
+<script>
+$(document).ready(function() {   
     let url = 'http://kdemo-env.eba-kahcrt4e.us-east-2.elasticbeanstalk.com/api/articulos/';
-    new Vue({
-      el: '#app',
-      vuetify: new Vuetify(),
-       data() {
-        return {            
-            articulos: [],
-            dialog: false,
-            operacion: '',            
-            articulo:{
-                id: null,
-                descripcion:'',
-                precio:'',
-                stock:''
-            }          
-        }
-       },
-       created(){               
-            this.mostrar()
-       },  
-       methods:{          
-            //MÉTODOS PARA EL CRUD
-            mostrar:function(){
-              axios.get(url)
-              .then(response =>{
-                this.articulos = response.data;                   
-              })
-            },
-            crear:function(){
-                let parametros = {descripcion:this.articulo.descripcion, precio:this.articulo.precio,stock:this.articulo.stock };                
-                axios.post(url, parametros)
-                .then(response =>{
-                  this.mostrar();
-                });     
-                this.articulo.descripcion="";
-                this.articulo.precio="";
-                this.articulo.stock="";
-            },                        
-            editar: function(){
-            let parametros = {descripcion:this.articulo.descripcion, precio:this.articulo.precio, stock:this.articulo.stock, id:this.articulo.id};                            
-            //console.log(parametros);                   
-                 axios.put(url+this.articulo.id, parametros)                            
-                  .then(response => {                                
-                     this.mostrar();
-                  })                
-                  .catch(error => {
-                      console.log(error);            
-                  });
-            },
-            borrar:function(id){
-             Swal.fire({
-                title: '¿Confirma eliminar el registro?',   
-                confirmButtonText: `Confirmar`,                  
-                showCancelButton: true,                          
-              }).then((result) => {                
-                if (result.isConfirmed) {      
-                      //procedimiento borrar
-                      axios.delete(url+id)
-                      .then(response =>{           
-                          this.mostrar();
-                       });      
-                      Swal.fire('¡Eliminado!', '', 'success')
-                } else if (result.isDenied) {                  
-                }
-              });              
-            },
-
-            //Botones y formularios
-            guardar:function(){
-              if(this.operacion=='crear'){
-                this.crear();                
-              }
-              if(this.operacion=='editar'){ 
-                this.editar();                           
-              }
-              this.dialog=false;                        
-            }, 
-            formNuevo:function () {
-              this.dialog=true;
-              this.operacion='crear';
-              this.articulo.descripcion='';                           
-              this.articulo.precio='';
-              this.articulo.stock='';
-            },
-            formEditar:function(id, descripcion, precio, stock){              
-              this.articulo.id = id;
-              this.articulo.descripcion = descripcion;                            
-              this.articulo.precio = precio;
-              this.articulo.stock = stock;                      
-              this.dialog=true;                            
-              this.operacion='editar';
+    let opcion = null;
+    let id, descripcion, precio, stock, fila;
+    //MOSTRAR
+    let tablaArticulos = $('#tablaArticulos').DataTable({            
+        "ajax":{
+            "url": url,
+            "dataSrc":""
+        },
+        "columns":[
+            {"data":"id"},
+            {"data":"descripcion"},
+            {"data":"precio"},
+            {"data":"stock"},
+            {"defaultContent": "<div class='text-center'><div class='btn-group'><button class='btn btn-info btn-sm btnEditar'>Editar</button><button class='btn btn-danger btn-sm btnBorrar'>Borrar</button></div></div>"}
+        ],
+        "columnDefs":[{
+            "targets":[2],
+            render(v){
+                return Number(v).toFixed(2)
             }
-       }      
+        }]              
     });
-  </script>
+    //CREAR
+    $("#btnCrear").click(function(){
+        opcion='crear';            
+        id=null;
+        $("#formArticulos").trigger("reset");
+        $(".modal-header").css( "background-color", "#23272b");
+        $(".modal-header").css( "color", "white" );
+        $(".modal-title").text("Crear Artículo");
+        $('#modalCRUD').modal('show');      
+    });    
+    //EDITAR        
+    $(document).on("click", ".btnEditar", function(){               
+        opcion='editar';
+        fila = $(this).closest("tr");         
+        id = parseInt(fila.find('td:eq(0)').text());
+        descripcion = fila.find('td:eq(1)').text();
+        precio = fila.find('td:eq(2)').text();
+        stock = fila.find('td:eq(3)').text();            
+        $("#id").val(id);
+        $("#descripcion").val(descripcion);
+        $("#precio").val(precio);
+        $("#stock").val(stock);            
+        $(".modal-header").css("background-color", "#7303c0");
+        $(".modal-header").css("color", "white" );
+        $(".modal-title").text("Editar Artículo");    
+        $('#modalCRUD').modal('show');       
+    });
+
+     //BORRAR
+    $(document).on("click", ".btnBorrar", function(){
+        fila = $(this);           
+        id = parseInt($(this).closest('tr').find('td:eq(0)').text());            
+        Swal.fire({
+            title: '¿Confirma eliminar el registro?',                
+            showCancelButton: true,
+            confirmButtonText: `Confirmar`,                
+            }).then((result) => {               
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: url+id,
+                    method: 'delete',                        
+                    data:  {id:id},    
+                    success: function() {
+                        tablaArticulos.row(fila.parents('tr')).remove().draw();                  
+                    }
+                });
+                Swal.fire('¡Registro Eliminado!', '', 'success')
+            } 
+            })
+    });     
+    //submit para el CREAR y EDITAR
+    $('#formArticulos').submit(function(e){                                     
+        e.preventDefault();
+        id = $.trim($('#id').val());    
+        descripcion = $.trim($('#descripcion').val());
+        precio = $.trim($('#precio').val());    
+        stock = $.trim($('#stock').val());                
+        if(opcion=='crear'){                
+            $.ajax({                    
+                url: url,
+                method: 'post',                                                         
+                contentType: 'application/json',  
+                data:  JSON.stringify({descripcion:descripcion, precio:precio, stock:stock}),                       
+                success: function(data) {                       
+                    tablaArticulos.ajax.reload(null, false);                        
+                }
+            }); 
+        }
+        if(opcion=='editar'){
+            console.log("EDITAR");
+            $.ajax({                    
+                url: url+id,
+                method: 'put',                                        
+                contentType: 'application/json',  
+                data:  JSON.stringify({id:id, descripcion:descripcion, precio:precio, stock:stock}),                       
+                success: function(data) {                       
+                    tablaArticulos.ajax.reload(null, false);                        
+                }
+            }); 
+        }                   
+        $('#modalCRUD').modal('hide');                                
+    });
+});
+</script>
 </body>
 </html> 
